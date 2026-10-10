@@ -1,0 +1,431 @@
+<meta charset="utf-8">
+<title>Who Finishes an Online Course?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,500..800&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: shared portfolio summary style — headline strip, then themed sections; outcomes always use the same four colours in course-result order. */
+:root {
+  --bg: #f5f6f8;
+  --panel: #ffffff;
+  --ink: #15203a;
+  --ink-2: #4f5668;
+  --ink-3: #7a8091;
+  --line: #e1e4ea;
+  --track: #eceef2;
+  --blue: #2a78d6;
+  --orange: #eb6834;
+  --grey: #b9bcc6;
+  --good: #0f8a4f;
+  --good-bg: #e3f4ea;
+  --warn: #9a6400;
+  --warn-bg: #fbf0d6;
+  --info: #5a4bb3;
+  --info-bg: #ecebfa;
+  --display: "Archivo", "Arial Narrow", system-ui, sans-serif;
+  --body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12151c; --panel: #1b1f29; --ink: #eef0f5; --ink-2: #b9bdc9; --ink-3: #8b90a0;
+    --line: #2c3240; --track: #262b37; --blue: #3987e5; --orange: #d95926; --grey: #5c6170;
+    --good: #4cc98a; --good-bg: #173326; --warn: #e8b44a; --warn-bg: #3a2f14; --info: #a99ff0; --info-bg: #26233f;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12151c; --panel: #1b1f29; --ink: #eef0f5; --ink-2: #b9bdc9; --ink-3: #8b90a0;
+  --line: #2c3240; --track: #262b37; --blue: #3987e5; --orange: #d95926; --grey: #5c6170;
+  --good: #4cc98a; --good-bg: #173326; --warn: #e8b44a; --warn-bg: #3a2f14; --info: #a99ff0; --info-bg: #26233f;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.5; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-inline: 20px; padding-block: 28px 56px; display: grid; gap: 28px; }
+
+/* language switch: Portuguese hidden unless selected */
+[data-l="pt"] { display: none; }
+:root[data-lang="pt"] [data-l="pt"] { display: revert; }
+:root[data-lang="pt"] [data-l="en"] { display: none; }
+
+h1, h2, h3 { font-family: var(--display); font-stretch: 85%; text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h1 { font-size: clamp(30px, 5vw, 46px); font-weight: 800; line-height: 1.05; }
+h2 { font-size: clamp(22px, 3vw, 28px); font-weight: 750; }
+h3 { font-size: 19px; font-weight: 700; line-height: 1.2; }
+p { margin: 0; max-width: 65ch; }
+.eyebrow { font-family: var(--display); font-stretch: 85%; font-weight: 700; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
+.muted { color: var(--ink-2); }
+.small { font-size: 14px; }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+/* header */
+header { display: grid; gap: 14px; }
+.top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.lede { font-size: 18px; color: var(--ink-2); }
+.switch { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 3px; background: var(--panel); }
+.switch button { font: 600 13px var(--body); border: 0; background: transparent; color: var(--ink-2); padding: 6px 14px; border-radius: 999px; cursor: pointer; }
+.switch button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.switch button:focus-visible, .tab:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+/* summary strip */
+.summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.summary > div { background: var(--panel); padding: 18px; display: grid; gap: 6px; align-content: start; }
+.big { font-family: var(--display); font-stretch: 80%; font-weight: 800; font-size: 40px; line-height: 1; }
+.big small { font-size: 18px; font-weight: 600; color: var(--ink-2); }
+
+/* era sections */
+.era { display: grid; gap: 16px; }
+.era-head { display: flex; gap: 12px 20px; align-items: baseline; flex-wrap: wrap; border-bottom: 2px solid var(--ink); padding-bottom: 10px; }
+.era-head .meta { color: var(--ink-2); font-size: 15px; }
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 20px; display: grid; gap: 14px; align-content: start; min-width: 0; }
+.card.wide { grid-column: 1 / -1; }
+.takeaway { font-size: 15.5px; color: var(--ink-2); }
+
+/* grade bars on the 0–20 scale */
+.bars { display: grid; gap: 10px; }
+.bar-group { display: grid; gap: 6px; }
+.bar-group + .bar-group { margin-top: 6px; }
+.group-label { font-weight: 600; font-size: 14px; }
+.bar { display: grid; grid-template-columns: minmax(0, 9.5em) minmax(0, 1fr) 3.2em; align-items: center; gap: 10px; font-size: 14px; }
+.bar .lab { color: var(--ink-2); overflow-wrap: anywhere; }
+.track { position: relative; height: 18px; background: var(--track); border-radius: 0 4px 4px 0; }
+.fill { position: absolute; inset: 0 auto 0 0; border-radius: 0 4px 4px 0; }
+.pass { position: absolute; top: -4px; bottom: -4px; left: 50%; width: 0; border-left: 1.5px dashed var(--ink-3); }
+.val { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 14px; text-align: right; }
+.scale { display: grid; grid-template-columns: minmax(0, 9.5em) minmax(0, 1fr) 3.2em; gap: 10px; font-size: 12px; color: var(--ink-3); }
+.scale .ticks { display: flex; justify-content: space-between; position: relative; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--ink-2); }
+.key { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+
+/* dot grid (100 students) */
+.dots { display: grid; grid-template-columns: repeat(20, 1fr); gap: 5px; max-width: 420px; }
+.dot { aspect-ratio: 1; border-radius: 50%; background: var(--grey); }
+.dot.fail { background: var(--orange); }
+.dot.flag { box-shadow: 0 0 0 2px var(--panel), 0 0 0 3.5px var(--ink); }
+.dot-legend { display: grid; gap: 6px; font-size: 14px; color: var(--ink-2); }
+.dot-legend .dot { width: 13px; display: inline-block; vertical-align: -2px; margin-right: 8px; }
+
+/* comparison meters (percentile among schools) */
+.meter-row { display: grid; grid-template-columns: minmax(0, 11em) minmax(0, 1fr); gap: 10px 14px; align-items: center; font-size: 14px; }
+.meter { position: relative; height: 26px; border-top: 1px solid var(--line); }
+.meter::before { content: ""; position: absolute; left: 0; right: 0; top: 12px; border-top: 2px solid var(--track); }
+.pin { position: absolute; top: 4px; width: 18px; height: 18px; border-radius: 50%; transform: translateX(-50%); border: 2px solid var(--panel); }
+.pin span { position: absolute; top: -2px; left: 22px; font-family: var(--mono); font-size: 12px; white-space: nowrap; color: var(--ink-2); }
+.pin.gp { background: var(--blue); }
+.pin.ms { background: var(--orange); }
+.pin.ms span { top: auto; bottom: -18px; }
+.meter-axis { display: flex; justify-content: space-between; font-size: 12px; color: var(--ink-3); }
+
+/* then & now verdicts */
+.verdicts { display: grid; gap: 0; }
+.verdict { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1fr) auto; gap: 12px 18px; padding-block: 14px; border-top: 1px solid var(--line); align-items: start; font-size: 15px; }
+.verdict.head { border-top: 0; padding-block: 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-3); font-family: var(--display); font-stretch: 85%; font-weight: 700; }
+.chip { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; padding: 3px 10px; border-radius: 999px; white-space: nowrap; }
+.chip::before { font-size: 12px; }
+.chip.same { color: var(--good); background: var(--good-bg); }
+.chip.same::before { content: "✓"; }
+.chip.changed { color: var(--warn); background: var(--warn-bg); }
+.chip.changed::before { content: "↺"; }
+.chip.mixed { color: var(--info); background: var(--info-bg); }
+.chip.mixed::before { content: "≈"; }
+
+.caution { border-left: 4px solid var(--warn); background: var(--warn-bg); border-radius: 0 10px 10px 0; padding: 16px 20px; display: grid; gap: 8px; }
+.caution h3 { color: var(--ink); }
+.caution ul, .card ul { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; max-width: 70ch; }
+footer { font-size: 13px; color: var(--ink-3); display: grid; gap: 6px; border-top: 1px solid var(--line); padding-top: 16px; }
+footer a { color: var(--ink-2); }
+
+@media (max-width: 860px) {
+  .summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grid { grid-template-columns: minmax(0, 1fr); }
+  .verdict { grid-template-columns: minmax(0, 1fr) auto; }
+  .verdict > .then, .verdict > .now { grid-column: 1 / -1; }
+  .verdict.head { display: none; }
+}
+@media (max-width: 480px) {
+  .summary { grid-template-columns: minmax(0, 1fr); }
+  .bar, .scale { grid-template-columns: minmax(0, 6.5em) minmax(0, 1fr) 3em; }
+  .meter-row { grid-template-columns: minmax(0, 1fr); }
+  .big { font-size: 34px; }
+}
+
+
+/* shared components */
+.assay-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.family { display: grid; gap: 8px; align-content: start; min-width: 0; }
+.family h4 { margin: 0; font: 700 14px var(--body); color: var(--ink); }
+.pct-bar { display: grid; grid-template-columns: minmax(0, 12em) minmax(0, 1fr) 3.4em; gap: 10px; align-items: center; font-size: 14px; }
+.pct-bar .lab { color: var(--ink-2); overflow-wrap: anywhere; }
+.pct-bar .track { height: 14px; }
+.molfig { background: #ffffff; border: 1px solid var(--line); border-radius: 8px; padding: 6px; }
+.molfig img { display: block; width: 100%; height: auto; }
+.callout { font-size: 15.5px; color: var(--ink-2); }
+.callout b { color: var(--ink); }
+.pick { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 6px; max-width: 360px; }
+.pick i { aspect-ratio: 1; border-radius: 50%; background: var(--grey); }
+.pick i.tox { background: var(--orange); }
+.pick-row { display: grid; gap: 6px; }
+.pick-row + .pick-row { margin-top: 10px; }
+@media (max-width: 860px) { .assay-grid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 480px) { .pct-bar { grid-template-columns: minmax(0, 7.5em) minmax(0, 1fr) 3em; } }
+
+
+/* additions for this page */
+.group-title { font: 600 13px var(--body); color: var(--ink-2); margin-top: 4px; }
+.pair { display: grid; grid-template-columns: minmax(0, 12em) minmax(0, 1fr) 3.4em; gap: 4px 10px; align-items: center; font-size: 14px; }
+.pair .lab { grid-row: span 2; color: var(--ink-2); overflow-wrap: anywhere; align-self: center; }
+.pair .track { height: 11px; }
+.pairs { display: grid; gap: 10px; }
+.years { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 6px; align-items: end; height: 170px; padding-top: 18px; }
+.yr { display: flex; flex-direction: column; justify-content: flex-end; align-items: stretch; gap: 3px; height: 100%; text-align: center; font-size: 11.5px; color: var(--ink-3); min-width: 0; }
+.yr .col { background: var(--blue); border-radius: 4px 4px 0 0; width: 100%; position: relative; }
+.yr .col.hot { background: var(--orange); }
+.yr .v { font-family: var(--mono); font-size: 11px; color: var(--ink-2); }
+.score { display: flex; gap: 22px; flex-wrap: wrap; align-items: flex-end; }
+.score > div { display: grid; gap: 4px; }
+.score .big { font-size: 44px; }
+.strike { text-decoration: line-through; text-decoration-thickness: 3px; text-decoration-color: var(--orange); color: var(--ink-3); }
+@media (max-width: 480px) {
+  .pair { grid-template-columns: minmax(0, 7.5em) minmax(0, 1fr) 3em; }
+  .years { gap: 3px; }
+  .yr { font-size: 9.5px; }
+  .yr .v { font-size: 9px; }
+}
+
+
+/* additions for this page: course outcomes need four colours */
+:root { --navy: #1c5cab; --yellow: #eda100; --on-dark: #ffffff; --on-yellow: #15203a; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --navy: #2a68c4; --yellow: #c98500; --on-dark: #ffffff; --on-yellow: #12151c; } }
+:root[data-theme="dark"] { --navy: #2a68c4; --yellow: #c98500; --on-dark: #ffffff; --on-yellow: #12151c; }
+.stack-row { display: grid; grid-template-columns: minmax(0, 11em) minmax(0, 1fr); gap: 10px; align-items: center; font-size: 14px; }
+.stack-row .lab { color: var(--ink-2); overflow-wrap: anywhere; }
+.stack { display: flex; height: 26px; border-radius: 4px; overflow: hidden; gap: 2px; background: var(--panel); }
+.stack span { display: flex; align-items: center; justify-content: center; font: 500 12px var(--mono); color: var(--on-dark); min-width: 0; overflow: hidden; white-space: nowrap; }
+.stack span.y { color: var(--on-yellow); }
+.stacks { display: grid; gap: 10px; }
+.timeline { position: relative; height: 64px; margin-top: 8px; }
+.timeline .rail { position: absolute; left: 0; right: 0; top: 28px; height: 8px; border-radius: 4px; background: var(--track); overflow: hidden; }
+.timeline .rail i { position: absolute; top: 0; bottom: 0; left: 0; background: var(--orange); opacity: .9; }
+.timeline .mk { position: absolute; top: 0; transform: translateX(-50%); text-align: center; font-size: 12px; color: var(--ink-2); white-space: nowrap; }
+.timeline .mk b { display: block; font: 700 16px var(--mono); color: var(--ink); }
+.timeline .mk.low { top: 42px; }
+@media (max-width: 480px) {
+  .stack-row { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  .timeline .mk { font-size: 10.5px; }
+}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="top">
+      <span class="eyebrow"><span data-l="en">Open University project · plain-language summary</span><span data-l="pt">Projeto Open University · resumo em linguagem simples</span></span>
+      <div class="switch" role="group" aria-label="Language">
+        <button type="button" id="btn-en" aria-pressed="true" data-set="en">English</button>
+        <button type="button" id="btn-pt" aria-pressed="false" data-set="pt">Português</button>
+      </div>
+    </div>
+    <h1><span data-l="en">Who finishes an online course, and can we tell early who won't?</span><span data-l="pt">Quem termina um curso online, e conseguimos saber cedo quem não vai terminar?</span></h1>
+    <p class="lede"><span data-l="en">The Open University (UK) shared data on 32,593 enrolments of adult distance learners in 7 courses in 2013–2014: who they were, every assignment they handed in, and 10.6 million records of clicks in the online learning platform.</span><span data-l="pt">A Open University (Reino Unido) partilhou dados de 32 593 inscrições de adultos em ensino à distância, em 7 cursos, em 2013–2014: quem eram, todos os trabalhos que entregaram e 10,6 milhões de registos de cliques na plataforma de ensino online.</span></p>
+  </header>
+
+  <section class="summary" aria-label="Key findings">
+    <div>
+      <span class="eyebrow"><span data-l="en">Don't complete</span><span data-l="pt">Não concluem</span></span>
+      <span class="big num">1<small>&nbsp;<span data-l="en">in 2</span><span data-l="pt">em 2</span></small></span>
+      <p class="small muted"><span data-l="en">students withdraw (31%) or fail (22%).</span><span data-l="pt">alunos desistem (31%) ou reprovam (22%).</span></p>
+    </div>
+    <div>
+      <span class="eyebrow"><span data-l="en">Leave very early</span><span data-l="pt">Saem muito cedo</span></span>
+      <span class="big num">50%</span>
+      <p class="small muted"><span data-l="en">of withdrawals have happened by day 27 of the course.</span><span data-l="pt">das desistências já aconteceram ao dia 27 do curso.</span></p>
+    </div>
+    <div>
+      <span class="eyebrow"><span data-l="en">Quietly drift away</span><span data-l="pt">Desligam-se em silêncio</span></span>
+      <span class="big num">2×</span>
+      <p class="small muted"><span data-l="en">more inactive students end up failing than formally withdrawing.</span><span data-l="pt">mais alunos inativos acabam por reprovar do que por anular a inscrição.</span></p>
+    </div>
+    <div>
+      <span class="eyebrow"><span data-l="en">Early warning by week 8</span><span data-l="pt">Alerta na semana 8</span></span>
+      <span class="big num">8<small>&nbsp;<span data-l="en">in 10</span><span data-l="pt">em 10</span></small></span>
+      <p class="small muted"><span data-l="en">students flagged as most at risk really don't complete.</span><span data-l="pt">alunos sinalizados como de maior risco não concluem mesmo.</span></p>
+    </div>
+  </section>
+
+  <section class="era">
+    <div class="era-head">
+      <h2><span data-l="en">How courses end</span><span data-l="pt">Como terminam os cursos</span></h2>
+      <span class="meta"><span data-l="en">share of enrolments by final result</span><span data-l="pt">percentagem de inscrições por resultado final</span></span>
+    </div>
+    <article class="card wide">
+      <div class="legend" id="lg-results"></div>
+      <div class="stacks" id="c-results"></div>
+      <p class="takeaway"><span data-l="en">The 7 courses differ a lot: in one, almost half of students withdraw; in another, about 1 in 9. The Open University does not publish course names; three are social sciences and four are science and technology.</span><span data-l="pt">Os 7 cursos são muito diferentes: num, quase metade dos alunos desiste; noutro, cerca de 1 em 9. A Open University não publica os nomes dos cursos; três são de ciências sociais e quatro de ciências e tecnologia.</span></p>
+    </article>
+    <div class="grid">
+      <article class="card">
+        <h3><span data-l="en">Disadvantage raises the risk</span><span data-l="pt">A desvantagem aumenta o risco</span></h3>
+        <div id="c-bg" class="bars"></div>
+        <p class="takeaway"><span data-l="en">Share of students who don't complete. Living in a deprived area, having no previous qualifications, repeating the course or taking on too much work at once all make completion less likely. But background only shifts the odds: on its own it predicts poorly.</span><span data-l="pt">Percentagem de alunos que não concluem. Viver numa zona desfavorecida, não ter qualificações, repetir o curso ou acumular demasiado trabalho tornam a conclusão menos provável. Mas o perfil só muda as probabilidades: sozinho, prevê mal.</span></p>
+      </article>
+      <article class="card">
+        <h3><span data-l="en">The first assignment is a turning point</span><span data-l="pt">O primeiro trabalho é decisivo</span></h3>
+        <div class="stacks" id="c-first"></div>
+        <p class="takeaway"><span data-l="en">The first assignment is due around day 22. Of students who skip it, fewer than 1 in 20 go on to pass.</span><span data-l="pt">O primeiro trabalho tem prazo por volta do dia 22. Dos alunos que não o entregam, menos de 1 em cada 20 acaba por passar.</span></p>
+      </article>
+    </div>
+  </section>
+
+  <section class="era">
+    <div class="era-head">
+      <h2><span data-l="en">When and how students leave</span><span data-l="pt">Quando e como os alunos saem</span></h2>
+    </div>
+    <div class="grid">
+      <article class="card">
+        <h3><span data-l="en">The window to help is short</span><span data-l="pt">A janela para ajudar é curta</span></h3>
+        <div class="timeline" id="c-timeline" role="img" aria-label="31% of withdrawals before day 0, 50% by day 27, 68% by day 84"></div>
+        <p class="takeaway"><span data-l="en">Share of all withdrawals that have already happened. Almost a third leave before the course even starts.</span><span data-l="pt">Percentagem de todas as desistências que já aconteceram. Quase um terço sai antes de o curso começar.</span></p>
+      </article>
+      <article class="card">
+        <h3><span data-l="en">Most inactive students don't formally leave</span><span data-l="pt">A maioria dos alunos inativos não sai formalmente</span></h3>
+        <div class="stacks" id="c-silent"></div>
+        <p class="takeaway"><span data-l="en">Students still enrolled in week 8, by whether they logged in that week. Inactive students much more often fail than withdraw, so a warning system must look for both.</span><span data-l="pt">Alunos ainda inscritos na semana 8, conforme entraram ou não na plataforma nessa semana. Os inativos reprovam muito mais vezes do que desistem, por isso um sistema de alerta tem de procurar as duas coisas.</span></p>
+      </article>
+    </div>
+  </section>
+
+  <section class="era">
+    <div class="era-head">
+      <h2><span data-l="en">An early-warning model</span><span data-l="pt">Um modelo de alerta precoce</span></h2>
+      <span class="meta"><span data-l="en">trained on 2013 courses, tested on 2014 · using only what was known on each day</span><span data-l="pt">treinado nos cursos de 2013, testado nos de 2014 · só com o que se sabia em cada dia</span></span>
+    </div>
+    <div class="grid">
+      <article class="card">
+        <h3><span data-l="en">The longer we watch, the better we predict</span><span data-l="pt">Quanto mais tempo observamos, melhor prevemos</span></h3>
+        <div class="years" id="c-weeks" style="grid-template-columns: repeat(8, minmax(0, 1fr));" role="img" aria-label="Score rises from 70 at the start to 92 by week 24"></div>
+        <p class="takeaway"><span data-l="en">Times in 100 that the model ranks a student who won't complete above one who will (50 is a coin toss), by week of the course. Background alone scores 63 all the way through. What students do online and in their assignments makes the difference.</span><span data-l="pt">Vezes em 100 que o modelo põe um aluno que não vai concluir acima de um que vai (50 é atirar uma moeda ao ar), por semana do curso. Só com o perfil, a pontuação fica nos 63 do princípio ao fim. O que faz a diferença é o que os alunos fazem online e nos trabalhos.</span></p>
+      </article>
+      <article class="card">
+        <h3><span data-l="en">What a tutor would see</span><span data-l="pt">O que um tutor veria</span></h3>
+        <div id="c-tutor" class="bars"></div>
+        <p class="takeaway"><span data-l="en">If tutors call the 1 in 5 students the model rates as most at risk, this is the share of those students who really don't complete, compared with the average student. Earlier calls catch students sooner but include more false alarms.</span><span data-l="pt">Se os tutores contactarem o quinto de alunos que o modelo considera de maior risco, esta é a percentagem desses alunos que realmente não conclui, comparada com a média dos alunos. Contactar mais cedo apanha os alunos a tempo, mas com mais falsos alarmes.</span></p>
+      </article>
+    </div>
+    <article class="card wide">
+      <h3><span data-l="en">Checking fairness revealed a hidden problem, and a simple fix</span><span data-l="pt">Verificar a equidade revelou um problema escondido, e uma solução simples</span></h3>
+      <div class="legend" id="lg-fair"></div>
+      <div id="c-fair" class="pairs"></div>
+      <p class="takeaway"><span data-l="en">With one ranking for the whole university, flags looked much less accurate for women. The cause was the course mix, not gender. Women are 80–88% of two social-science courses where a single ranking over-flagged students in one course and never flagged anyone in the other. Ranking students within each course, as a tutor would, closed most of the gap and made the model better for everyone.</span><span data-l="pt">Com uma única ordenação para toda a universidade, os alertas pareciam muito menos certeiros para as mulheres. A causa era a mistura de cursos, não o género. As mulheres são 80–88% dos alunos de dois cursos de ciências sociais onde uma ordenação única sinalizava demais num curso e nunca sinalizava ninguém no outro. Ordenar os alunos dentro de cada curso, como faria um tutor, fechou a maior parte da diferença e melhorou o modelo para todos.</span></p>
+    </article>
+  </section>
+
+  <aside class="caution">
+    <h3><span data-l="en">Before drawing conclusions</span><span data-l="pt">Antes de tirar conclusões</span></h3>
+    <ul>
+      <li><span data-l="en">One university, 2013–2014. Online learning has changed a lot since.</span><span data-l="pt">Uma só universidade, em 2013–2014. O ensino online mudou muito desde então.</span></li>
+      <li><span data-l="en">Clicks are a rough measure: some students study from downloaded or printed material.</span><span data-l="pt">Os cliques são uma medida grosseira: há alunos que estudam com material descarregado ou impresso.</span></li>
+      <li><span data-l="en">A model shows who is at risk. Whether a phone call actually helps would need to be tested with students.</span><span data-l="pt">Um modelo mostra quem está em risco. Saber se um telefonema ajuda mesmo teria de ser testado com os alunos.</span></li>
+    </ul>
+  </aside>
+
+  <footer>
+    <span><span data-l="en">Source:</span><span data-l="pt">Fonte:</span> <a href="https://analyse.kmi.open.ac.uk/open_dataset" target="_blank" rel="noopener">Open University Learning Analytics Dataset</a> (Kuzilek, Hlosta &amp; Zdrahal, 2017) · 32,593 <span data-l="en">enrolments, 7 courses, 2013–2014.</span><span data-l="pt">inscrições, 7 cursos, 2013–2014.</span></span>
+    <span><span data-l="en">Code and notebooks:</span><span data-l="pt">Código e notebooks:</span> <a href="https://github.com/ncdomingues/online-course-dropout" target="_blank" rel="noopener">GitHub</a>.</span>
+  </footer>
+</div>
+
+<script>
+(function () {
+  const root = document.documentElement;
+  let lang = "en";
+  try { lang = localStorage.getItem("lang") === "pt" ? "pt" : "en"; } catch (e) {}
+  const fmt = v => v.toLocaleString(lang === "pt" ? "pt-PT" : "en-GB", { maximumFractionDigits: 0 });
+  const C = { D: "var(--navy)", P: "var(--blue)", F: "var(--yellow)", W: "var(--orange)" };
+
+  const L = {
+    en: { D: "Distinction", P: "Pass", F: "Fail", W: "Withdrew", all: "All enrolments",
+          mods: "Course", sub: "Handed in", nosub: "Skipped it", act: "Logged in", inact: "No login that week",
+          bg: [["Most deprived areas", 64.8], ["Least deprived areas", 42.5], ["No previous qualifications", 70.3], ["University degree", 43.8],
+               ["Repeating the course", 65.4], ["First attempt", 50.7], ["Heavy workload (>120 credits)", 69.6], ["Light workload (≤60 credits)", 48.2]],
+          before: "before start", by27: "by day 27", by84: "by week 12", wk: "wk",
+          tutor: [["Week 0 (course starts)", 73.9], ["Week 4", 75.7], ["Week 8", 80.0], ["Week 16", 90.1]], avg8: "Average student, week 8",
+          one: "One ranking for the whole university", byc: "Ranking within each course",
+          fair: [["Women: flags that were right", 66.9, 78.0], ["Men: flags that were right", 89.3, 87.7]] },
+    pt: { D: "Distinção", P: "Aprovado", F: "Reprovado", W: "Desistiu", all: "Todas as inscrições",
+          mods: "Curso", sub: "Entregaram", nosub: "Não entregaram", act: "Entraram na plataforma", inact: "Não entraram nessa semana",
+          bg: [["Zonas mais desfavorecidas", 64.8], ["Zonas menos desfavorecidas", 42.5], ["Sem qualificações anteriores", 70.3], ["Com licenciatura", 43.8],
+               ["A repetir o curso", 65.4], ["Primeira tentativa", 50.7], ["Muito trabalho (>120 créditos)", 69.6], ["Pouco trabalho (≤60 créditos)", 48.2]],
+          before: "antes do início", by27: "até ao dia 27", by84: "até à semana 12", wk: "sem.",
+          tutor: [["Semana 0 (início)", 73.9], ["Semana 4", 75.7], ["Semana 8", 80.0], ["Semana 16", 90.1]], avg8: "Média dos alunos, semana 8",
+          one: "Uma ordenação para toda a universidade", byc: "Ordenação dentro de cada curso",
+          fair: [["Mulheres: alertas certeiros", 66.9, 78.0], ["Homens: alertas certeiros", 89.3, 87.7]] },
+  };
+
+  function stacks(id, rows, t) {
+    document.getElementById(id).innerHTML = rows.map(([label, d, p, f, w]) => {
+      const seg = (v, k) => v > 0 ? '<span class="' + (k === "F" ? "y" : "") + '" style="width:' + v + '%;background:' + C[k] + '" title="' + t[k] + ": " + fmt(v) + '%">' + (v >= 7 ? fmt(v) + "%" : "") + "</span>" : "";
+      return '<div class="stack-row"><span class="lab">' + label + '</span><div class="stack">' + seg(d, "D") + seg(p, "P") + seg(f, "F") + seg(w, "W") + "</div></div>";
+    }).join("");
+  }
+  function bars(id, rows, max, mark) {
+    document.getElementById(id).innerHTML = rows.map(([label, v, color]) => {
+      const ref = mark != null ? '<span class="pass" style="left:' + (mark / max * 100) + '%" aria-hidden="true"></span>' : "";
+      return '<div class="pct-bar" title="' + label + ": " + fmt(v) + '%"><span class="lab">' + label + '</span>' +
+        '<span class="track"><span class="fill" style="width:' + Math.min(100, v / max * 100) + '%;background:' + color + '"></span>' + ref + "</span>" +
+        '<span class="val">' + fmt(v) + "%</span></div>";
+    }).join("");
+  }
+  function pairs(id, rows, max, colors) {
+    document.getElementById(id).innerHTML = rows.map(([label, a, b]) => {
+      const row = (v, c) => '<span class="track"><span class="fill" style="width:' + Math.min(100, v / max * 100) + '%;background:' + c + '"></span></span><span class="val">' + fmt(v) + "%</span>";
+      return '<div class="pair"><span class="lab">' + label + "</span>" + row(a, colors[0]) + row(b, colors[1]) + "</div>";
+    }).join("");
+  }
+  const legend = (id, items) => {
+    document.getElementById(id).innerHTML = items.map(([c, t]) => '<span class="key"><i class="sw" style="background:' + c + '"></i>' + t + "</span>").join("");
+  };
+
+  function render() {
+    const t = L[lang], O = "var(--orange)", B = "var(--blue)", G = "var(--grey)";
+    legend("lg-results", [[C.D, t.D], [C.P, t.P], [C.F, t.F], [C.W, t.W]]);
+    stacks("c-results", [[t.all, 9.3, 37.9, 21.6, 31.2],
+      [t.mods + " AAA", 5.9, 65.1, 12.2, 16.8], [t.mods + " BBB", 8.6, 38.9, 22.3, 30.2], [t.mods + " CCC", 11.2, 26.6, 17.6, 44.5],
+      [t.mods + " DDD", 6.1, 35.5, 22.5, 35.9], [t.mods + " EEE", 12.1, 44.1, 19.2, 24.6], [t.mods + " FFF", 8.6, 38.4, 22.0, 31.0],
+      [t.mods + " GGG", 15.6, 44.1, 28.7, 11.5]], t);
+    bars("c-bg", t.bg.map(([l, v], i) => [l, v, i % 2 === 0 ? O : B]), 80, 52.8);
+    stacks("c-first", [[t.sub, 12.0, 48.9, 22.3, 16.8], [t.nosub, 0.2, 4.5, 52.2, 43.1]], t);
+    stacks("c-silent", [[t.act, 13.6, 53.7, 19.3, 13.4], [t.inact, 5.3, 26.5, 46.9, 21.2]], t);
+
+    // cumulative share of withdrawals on a day axis from -30 to 120
+    const x = d => (d + 30) / 150 * 100;
+    document.getElementById("c-timeline").innerHTML =
+      '<div class="rail"><i style="width:' + x(84) + '%"></i></div>' +
+      '<div class="mk" style="left:' + x(0) + '%"><b>31%</b>' + t.before + "</div>" +
+      '<div class="mk low" style="left:' + x(27) + '%"><b>50%</b>' + t.by27 + "</div>" +
+      '<div class="mk" style="left:' + x(84) + '%"><b>68%</b>' + t.by84 + "</div>";
+
+    const weeks = [[0, 70], [2, 71], [4, 76], [6, 78], [8, 80], [12, 83], [16, 86], [24, 92]];
+    document.getElementById("c-weeks").innerHTML = weeks.map(([w, v]) =>
+      '<div class="yr" title="' + t.wk + " " + w + ": " + v + '"><span class="v">' + v + '</span><span class="col' + (w === 8 ? " hot" : "") +
+      '" style="height:' + Math.round(v / 100 * 120) + 'px"></span><span>' + t.wk + " " + w + "</span></div>").join("");
+
+    bars("c-tutor", t.tutor.map(([l, v]) => [l, v, B]).concat([[t.avg8, 41.6, G]]), 100);
+    legend("lg-fair", [[G, t.one], [B, t.byc]]);
+    pairs("c-fair", t.fair, 100, [G, B]);
+  }
+
+  function setLang(l) {
+    lang = l;
+    root.setAttribute("data-lang", l);
+    root.setAttribute("lang", l === "pt" ? "pt-PT" : "en");
+    document.querySelectorAll(".switch button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.set === l)));
+    try { localStorage.setItem("lang", l); } catch (e) {}
+    render();
+  }
+  document.querySelectorAll(".switch button").forEach(b => b.addEventListener("click", () => setLang(b.dataset.set)));
+  setLang(lang);
+})();
+</script>

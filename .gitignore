@@ -1,0 +1,9 @@
+# Downloaded data (recreate with src/build_dataset.py)
+data/
+
+.ipynb_checkpoints/
+__pycache__/
+*.pyc
+.claude/
+.DS_Store
+Thumbs.db
